@@ -12,10 +12,14 @@ console.log("meu nome é", nome)
 // 2. Declare uma variável com `let` contendo um número e depois altere esse número para outro valor.
 let nome = "carol"
 console.log("meu nome é", nome)
+nome = "Gabriela"
+console.log("meu nome é", nome)
 
 // 3. Declare uma constante `const` com um array vazio. Adicione três elementos a esse array e exiba.
-const nome = "carolll"
-console.log("meu nome é", nome)
+const nomes = [];
+nomes.push("Carol", "lele", "lala")
+
+console.log("os nomes sao:", nomes)
 
 // 4. Escreva um bloco `if` que declare uma variável `var` dentro dele. Exiba essa variável fora do bloco.
 if (true){
@@ -53,6 +57,7 @@ console.log(nome)
 console.log(nome)
 
 var nome = "mumu"
+
 // 10. Crie uma função que declare uma variável `var` dentro dela e tente acessar essa variável fora da função (explique o resultado).
 
 
