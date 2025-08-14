@@ -56,7 +56,7 @@ console.log(nome)
 // 9. Demonstre hoisting declarando uma variável com `var` depois de usá-la (exiba antes da declaração).
 console.log(nome)
 
-var nome = "mumu"
+var nome = "mumuu"
 
 // 10. Crie uma função que declare uma variável `var` dentro dela e tente acessar essa variável fora da função (explique o resultado).
 
