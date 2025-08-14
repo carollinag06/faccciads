@@ -10,7 +10,7 @@ console.log(typeof nome)
 console.log("meu nome é", nome)
 
 // 2. Declare uma variável com `let` contendo um número e depois altere esse número para outro valor.
-let nome = "carol"
+let nome = "caroll"
 console.log("meu nome é", nome)
 nome = "Gabriela"
 console.log("meu nome é", nome)
@@ -32,23 +32,23 @@ if (true){
     let nome ="lala"
 }
 
-console.log(nome)
+//console.log(nome)
 
 // 6. Tente redeclarar uma variável usando `var` no mesmo escopo. Faça o mesmo com `let` e observe o erro.
 var data = 10
-data=12
+var data=12
 
 let nome = "lolo"
-nome = "lale"
+let nome = "lale"
 
 console.log(nome, data)
 
 // 7. Declare uma variável com `const` que contém um objeto com duas propriedades. Altere uma dessas propriedades e exiba o objeto.
-const nome = "mama"
+const nome = {nome: "caroll", "elen"}
 ______
 
 // 8. Declare uma variável com `let` sem inicializá-la. Depois atribua um valor e exiba.
-let nome = 
+let nome;
 nome="maria"
 
 console.log(nome)
@@ -60,4 +60,10 @@ var nome = "mumu"
 
 // 10. Crie uma função que declare uma variável `var` dentro dela e tente acessar essa variável fora da função (explique o resultado).
 
+function ExibirNome()
+{
+  var nome = "Caroll"
+  return nome
+}
 
+console.log("O retorno da funçao e:", ExibirNome())
