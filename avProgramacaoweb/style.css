@@ -1,0 +1,42 @@
+body{
+  background-color: rgba(223, 219, 213, 0.377);
+}
+
+#seclogin{
+  background-color: rgba(223, 219, 213, 0.377);
+  border-radius: 10px;
+  width: 70%;
+  height: 550px;
+  margin: auto;
+  margin-top: 100px;
+  text-align: center;
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#seclogin a{
+  text-decoration: none;
+  color: black;
+}
+
+.linha-opcoes { 
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.linha-opcoes a {
+  text-decoration: none;
+}
+
+.linha-opcoes p {
+  margin: 0;
+}
+
+.esqueceu-senha {
+  margin-top: 10px;
+}
