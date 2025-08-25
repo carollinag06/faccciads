@@ -169,5 +169,12 @@ console.log(pessoa instanceof Nome);
 
 
 // 29. Crie uma operação com `??` para definir um valor padrão caso a variável seja `null` ou `undefined`.
+let usuario = null
+let nomeUsuario = usuario ?? 'usuario desconhecido'
+console.log(nomeUsuario)
+
 
 // 30. Combine operadores aritméticos, lógicos e de comparação em uma expressão complexa e exiba o resultado.
+let expressao = ((8+2) * 5 > 40) && (10/2 == 5) || (7**2 >= 49)
+
+console.log(expressao)

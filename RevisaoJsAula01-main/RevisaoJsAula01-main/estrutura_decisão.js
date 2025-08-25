@@ -58,7 +58,7 @@ switch (diaSemana) {
     console.log("Segunda-feira");
     break;
   case 3:
-    console.log("Terça-feira");
+    console.log("Terça-feira"); 
     break;
   case 4:
     console.log("Quarta-feira");
