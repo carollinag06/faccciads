@@ -143,9 +143,9 @@ else {
   console.log('acesso negado')}
 
 // 9. Crie um `switch` que exiba uma mensagem diferente para cada mês do ano (1 a 12), usando `default` para valor inválido.
-let mes = 4;
+let mês = 4;
 
-switch (mes) {
+switch (mês) {
   case 1:
     
     console.log("Janeiro");  
@@ -355,19 +355,132 @@ else {
   console.log('tem menos de 5 caracteres')}
 
 // 22. Crie uma variável `nota1` e `nota2` e use `if/else` para exibir se a média é maior ou igual a 7.
+nota1 = 10
+nota2 = 8
+media = (nota1 + nota2) / 2
+
+if (media >= 7) {
+  console.log('A média é maior ou igual a 7')
+}
+else {
+  console.log('A média é menor que 7')
+}
 
 // 23. Crie um `switch` que exiba o tipo de triângulo com base em um número de 1 a 3 (1: Equilátero, 2: Isósceles, 3: Escaleno).
+let tipoTriangulo = 2;
+
+switch (tipoTriangulo) {
+  case 1:
+    console.log('Equilátero');
+    break;
+  case 2:
+    console.log('Isósceles');
+    break;
+  case 3:
+    console.log('Escaleno');
+    break;
+  default:
+    console.log('Tipo de triângulo desconhecido');
+    break;
+}
 
 // 24. Crie um `if/else` que verifica se uma variável `senha` corresponde à senha correta.
+let senha = '1234';
+if (senha === '1234') {
+  console.log('Senha correta');
+} else {
+  console.log('Senha incorreta');
+}
 
 // 25. Crie um `switch` que exiba a quantidade de dias do mês baseado em uma variável `mes` (1 a 12).
+let mes = 2;
+switch (mes) {
+  case 1:
+  case 3:
+  case 5:
+  case 7:
+  case 8:
+  case 10:
+  case 12:
+    console.log('31 dias');
+    break;
+  case 4:
+  case 6:
+  case 9:
+  case 11:
+    console.log('30 dias');
+    break;
+  case 2:
+    console.log('28 ou 29 dias');
+    break;
+  default:
+    console.log('Mês inválido');
+    break;
+}
 
 // 26. Crie um `if/else` que verifica se um número é múltiplo de 3, de 5, ou de ambos.
+let numero1 = 15;
+
+if (numero1 % 3 === 0 && numero1 % 5 === 0) {
+  console.log('Múltiplo de 3 e 5');
+} else if (numero1 % 3 === 0) {
+  console.log('Múltiplo de 3');
+} else if (numero1 % 5 === 0) {
+  console.log('Múltiplo de 5');
+} else {
+  console.log('Não é múltiplo de 3 nem de 5');
+}
 
 // 27. Crie um `switch` que retorna "Sim" para caso 1 e 2, "Não" para caso 3 e 4, e "Talvez" para outros.
+let caso = 2;
+
+switch (caso) {
+  case 1:
+  case 2:
+    console.log('Sim');
+    break;
+  case 3:
+  case 4:
+    console.log('Não');
+    break;
+  default:
+    console.log('Talvez');
+    break;
+}
 
 // 28. Crie um `if` que verifica se uma variável `temperatura` está em uma faixa entre 18 e 25 graus.
+let temperatura1 = 22;
+if (temperatura1 >= 18 && temperatura1 <= 25) {
+  console.log('Temperatura agradável');
+} else {
+  console.log('Temperatura fora da faixa');
+}
 
 // 29. Crie um `switch` que agrupe vários casos em uma mesma ação (por exemplo, cores quentes e frias).
+cor = 'vermelho';
+
+switch (cor) {
+  case 'vermelho':
+  case 'laranja':
+  case 'amarelo':
+    console.log('Cor quente');
+    break;
+  case 'verde':
+  case 'azul':
+  case 'violeta':
+    console.log('Cor fria');
+    break;
+  default:
+    console.log('Cor desconhecida');
+   break;
+}
 
 // 30. Crie um `if/else` que combina duas condições (ex: idade >= 18 e isAdmin = true) para permitir ou negar acesso.
+let idade1 = 34;
+let isAdmin1 = true;
+
+if (idade1 >= 18 && isAdmin1) {
+  console.log('Acesso permitido');
+} else {
+  console.log('Acesso negado');
+}

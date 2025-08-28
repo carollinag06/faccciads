@@ -5,16 +5,25 @@ Exercícios Práticos - Arrays
 */
 
 // 1. Crie um array com 5 elementos e exiba o terceiro.
+let array = [1, 2, 3, 4, 5];
+console.log(array[2]);
 
 // 2. Adicione um elemento ao final do array.
+array.push(6);
+console.log(array);
 
 // 3. Remova o primeiro elemento do array.
+array.shift();
+console.log(array);
 
 // 4. Use map para transformar todos os elementos em strings maiúsculas.
 
+
 // 5. Use filter para criar um novo array apenas com números pares.
 
+
 // 6. Use reduce para somar todos os números de um array.
+
 
 // 7. Use find para encontrar o primeiro elemento maior que 10.
 
