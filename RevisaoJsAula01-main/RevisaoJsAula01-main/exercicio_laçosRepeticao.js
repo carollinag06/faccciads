@@ -22,7 +22,12 @@ for (let i =1; i<=10; i+=1){
 }
 
 // 4. Use um `for` para somar todos os números de 1 a 100 e exiba o resultado.
+for(let i=1; i<=100; i+=1){
+    var soma = i+1
+    console.log(i)
+}
 
+console.log(soma)
 
 // 5. Crie um `for` que exiba os elementos de um array `["a", "b", "c", "d"]`.
 
