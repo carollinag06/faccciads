@@ -228,21 +228,78 @@ console.log('Game over')
 // ---------- FOREACH ----------
 
 // 31. Use `forEach` para exibir todos os elementos do array `[1, 2, 3, 4]`.
+let array=[43, 65, 79, 34]
+
+array.forEach(function(n){
+    console.log(n)
+})
 
 // 32. Use `forEach` para exibir cada nome em `["Ana", "João", "Maria"]`.
+let nomess = ['ana', 'ricardo', 'joao']
+
+nomess.forEach(function(n){
+    console.log(n)
+})
 
 // 33. Use `forEach` para exibir cada elemento e seu índice no array `["a", "b", "c"]`.
+let letras = ['a', 'b', 'c']
+
+letras.forEach(function(elemento, indice){
+    console.log("A letra:", elemento, 'esta em:', indice+1,'º');
+})
 
 // 34. Use `forEach` para exibir o dobro de cada número em `[2, 4, 6, 8]`.
+let nums = [2, 4, 6, 8]
+
+nums.forEach(function(n){
+    console.log(n*2)
+})
 
 // 35. Use `forEach` para somar todos os números de `[1, 2, 3, 4, 5]` e exibir o total.
+let total = 0;
+numeros = [4, 98, 17, 53]
+
+numeros.forEach(function(n){
+    console.log(total+=n)})
 
 // 36. Use `forEach` para exibir apenas os números pares de `[1, 2, 3, 4, 5, 6]`.
+let pares = [1, 2, 3, 4, 5, 6]
+
+pares.forEach(function(n){
+    if (n%2 == 0){
+        console.log(n)}
+    })
 
 // 37. Use `forEach` para exibir a quantidade de caracteres de cada palavra em `["carro", "casa", "sol"]`.
+let palavras = ["carro", "casa", "sol"]
+
+palavras.forEach(function(n){
+    console.log(n.length)
+    })
 
 // 38. Use `forEach` para criar uma string com todos os elementos de `[ "JS", "é", "top" ]` separados por espaço.
+let palavras2 = [ "JS", "é", "top" ]
+let frase = '';
+
+palavras2.forEach(function(n){
+    frase += n + ' ';
+})
+
+console.log(frase);
 
 // 39. Use `forEach` para calcular o quadrado de cada número em `[1, 2, 3, 4]`.
+let numeros3 = [1, 2, 3, 4];
+
+numeros3.forEach(function(n){
+    console.log(n*n)
+})
 
 // 40. Use `forEach` para exibir a soma acumulada dos números de `[10, 20, 30]`.
+let somaAcumulada = 0;
+let numeros4 = [10, 20, 30];
+
+numeros4.forEach(function(n){
+    somaAcumulada+=n
+})
+
+console.log(somaAcumulada)
