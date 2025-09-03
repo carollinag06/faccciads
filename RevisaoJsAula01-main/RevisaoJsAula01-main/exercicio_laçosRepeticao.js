@@ -135,28 +135,95 @@ while(cont <= num){
     cont++
 }
 // 20. Crie um `while` que calcule a média dos valores de um array `[10, 20, 30, 40]`.
+const valores = [10, 20, 30, 40];
+let somaValores = 0;
+let i = 0;
+
+while (i <= valores.length){
+    somaValores=valores[1]+somaValores
+    i++
+}
+
+console.log(somaValores)
 
 // ---------- DO...WHILE ----------
 
 // 21. Crie um `do...while` que exiba os números de 1 a 10.
+let i = 1;
+do {
+  console.log(i);
+  i++;
+} while (i <= 10);
 
 // 22. Crie um `do...while` que exiba os números pares de 0 a 20.
+let i = 0; 
+do {
+    console.log(i)
+    i+=2
+}while (i <= 20);
 
 // 23. Crie um `do...while` que exiba os múltiplos de 7 até 70.
+let i = 0
+do{
+    console.log(i)
+    i+=7
+}while (i<= 70);
 
 // 24. Crie um `do...while` que exiba a contagem regressiva de 5 até 1.
+let i=5
+do{
+    console.log(i)
+    i--
+}while (i>=0);
 
 // 25. Crie um `do...while` que pergunte uma senha até que o usuário acerte ("1234").
+let senha;
+do {
+  senha = prompt("Digite a senha:");
+} while (senha !== "1234");
+console.log("Senha correta!");
 
 // 26. Crie um `do...while` que exiba a soma dos números de 1 a 50.
+let n = 1;
+let soma = 0;
+
+do{
+    soma+=n
+    n++
+}while(n<=50)
+
+console.log(soma)
 
 // 27. Crie um `do...while` que percorra os elementos de um array `[2, 4, 6, 8]` e exiba cada um.
+let e = [2, 4, 6, 8]
+let contador = 0
+do{
+    console.log(e[contador])
+    contador++
+}while (contador < e.length)
 
 // 28. Crie um `do...while` que exiba os números ímpares de 1 a 15.
+let ns = 1;
+do {
+  console.log(ns);
+  ns += 2;
+} while (ns <= 15);
 
 // 29. Crie um `do...while` que mostre os caracteres de uma string "Olá" um por um.
+let saudacao = 'ola'
+let cont=0
+do{
+    console.log(saudacao[cont])
+    cont++
+}while(cont<saudacao.length)
 
 // 30. Crie um `do...while` que simule uma contagem de vidas de um jogo (3 até 0).
+let vidas = 3
+do{
+    console.log(vidas)
+    vidas--
+}while(vidas>0)
+console.log('Game over')
 
 // ---------- FOREACH ----------
 
