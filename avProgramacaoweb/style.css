@@ -1,42 +1,134 @@
-body{
-  background-color: rgba(223, 219, 213, 0.377);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-#seclogin{
-  background-color: rgba(223, 219, 213, 0.377);
-  border-radius: 10px;
-  width: 70%;
-  height: 550px;
-  margin: auto;
-  margin-top: 100px;
-  text-align: center;
-  padding: 20px;
-
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #a34b11  0%, #e785df 100%);
+  height: 100vh;
   display: flex;
+  justify-content: center;
   align-items: center;
-  flex-direction: column;
+  color: #333;
 }
 
-#seclogin a{
+.login-container {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 28px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+label {
+  top: -10px;
+  left: 15px;
+  background: #fff;
+  padding: 0 5px;
+  font-size: 14px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+input:focus+label {
+  color: #667eea;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.forgot-password {
+  display: block;
+  margin-top: 15px;
+  color: #667eea;
   text-decoration: none;
-  color: black;
+  font-size: 14px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
 }
 
 .linha-opcoes { 
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: flex-start;
+  width: 100%;
 }
 
 .linha-opcoes a {
   text-decoration: none;
 }
 
-.linha-opcoes p {
-  margin: 0;
+.linha-opcoes #lembrar {
+  display: inline-block;
 }
 
-.esqueceu-senha {
-  margin-top: 10px;
+/* Responsividade */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  input,
+  button {
+    padding: 12px;
+    font-size: 14px;
+  }
 }

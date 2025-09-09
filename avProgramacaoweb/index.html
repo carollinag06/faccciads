@@ -1,33 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Página de Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <section id="seclogin">
-    <h1>Login</h1>
-
-    <form action="login" method="post">
-      <label for="username">Nome de usúario:</label>
-      <input type="text" id="username" name="username" placeholder="Nome de usúario ou email" required>
-      <label for="senha">Password:</label>
-      <input type="password" id="password" name="password" placeholder="Senha" required>
-      <br>
-      <div class="linha-opcoes">
-        <input type="checkbox" id="lembrar" name="lembrar">
-        <label for="lembrar">Lembrar-me</label>
-        <a href="">Esqueceu sua senha?</a>
+  <div class="login-container">
+    <h2>Faça seu Login</h2>
+    <form id="loginForm">
+      <div class="input-group">
+        <input type="email" id="email" required>
+        <label for="email">Endereço de Email</label>
       </div>
-
-      <button type="submit">Login</button>
+      <div class="input-group">
+        <input type="password" id="password" required>
+        <label for="password">Senha</label>
+      </div>
+      <button type="submit">Entrar</button>
     </form>
+    
 
-  </section>
+    <div class="linha-opcoes">
+      <input type="checkbox" id="lembrar" name="lembrar">
+      <label for="lembrar">Lembrar-me</label>
+      <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (email && password) {
+        alert('Login realizado com sucesso! (Simulação)');
+        // Aqui você pode adicionar lógica real de login, como enviar para um servidor
+      } else {
+        alert('Por favor, preencha todos os campos.');
+      }
+    });
+  </script>
 </body>
 
 </html>
+</content>
+</create_file>
