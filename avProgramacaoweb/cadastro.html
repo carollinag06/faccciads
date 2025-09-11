@@ -1,144 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Cadastro</title>
   <link rel="stylesheet" href="style-cadastro.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 
 <body>
   <h1>Cadastro</h1>
+
   <form id="cadastroForm">
-    <label for="nome">Nome:</label>
-    <input type="text" id="nome" name="nome" required>
+    <div class="metade">
+      <fieldset>
+        <legend>Informações basicas</legend>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required><br>
 
-    <label for="nascimento">Data de Nascimento:</label>
-    <input type="date" id="nascimento" name="nascimento" required>
+        <label for="nascimento">Data de Nascimento:</label>
+        <input type="date" id="nascimento" name="nascimento" required placeholder="Data de nascimento"><br>
 
-    <label for="cpf">CPF:</label>
-    <input type="text" id="cpf" name="cpf" required><br>
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" name="cpf" required placeholder="Digite seu CPF"><br>
 
-    <label for="rg">RG:</label>
-    <input type="text" id="rg" name="rg" required><br>
+        <label for="rg">RG:</label>
+        <input type="text" id="rg" name="rg" required placeholder="Digite seu RG"><br>
 
-    <input type="radio" id="masculino" name="genero" value="masculino">
-    <label for="masculino">Masculino</label>
-    <input type="radio" id="feminino" name="genero" value="feminino">
-    <label for="feminino">Feminino</label>
+        <label for="genero">Gênero:</label>
+        <input type="radio" id="masculino" name="genero" value="masculino">
+        <label for="masculino">Masculino</label>
+        <input type="radio" id="feminino" name="genero" value="feminino">
+        <label for="feminino">Feminino</label><br>
 
-    <label for="estadoCivil">Estado Civil:</label>
-    <select name="estadoCivil" id="estadoCivil">
-      <option value="solteiro">Solteiro</option>
-      <option value="casado">Casado</option>
-      <option value="divorciado">Divorciado</option>
-      <option value="viuvo">Viúvo</option>
-    </select>
+        <label for="estadoCivil">Estado Civil:</label>
+        <select name="estadoCivil" id="estadoCivil">
+          <option value="solteiro">Solteiro</option>
+          <option value="casado">Casado</option>
+          <option value="divorciado">Divorciado</option>
+          <option value="viuvo">Viúvo</option>
+        </select><br>
 
-    <label for="naturalidade:"></label>
-    <select name="naturalidade" id="naturalidade">
-      <option value="Brasileiro">Brasileiro</option>
-    </select>
-    <label for="cidade">Cidade:</label>
-    <select name="cidade" id="cidade">
-      <option value="São Paulo">São Paulo</option>
-      <option value="Rio de Janeiro">Rio de Janeiro</option>
-      <option value="Belo Horizonte">Belo Horizonte</option>
-    </select>
+        <label for="naturalidade">Naturalidade:</label>
+        <select name="naturalidade" id="naturalidade">
+          <option value="Brasileiro">Brasileiro</option>
+        </select><br>
 
-    <label for="endereco">Endereço:</label>
-    <label for="rua">Rua:</label>
-    <input type="text" id="rua" name="rua" required>
+        <label for="cidade">Cidade:</label>
+        <select name="cidade" id="cidade">
+          <option value="São Paulo">São Paulo</option>
+          <option value="Rio de Janeiro">Rio de Janeiro</option>
+          <option value="Belo Horizonte">Belo Horizonte</option>
+        </select><br>
+      </fieldset>
 
-    <label for="numero">Número:</label>
-    <input type="text" id="numero" name="numero" required>
+      <fieldset>
+        <legend>Endereço</legend>
+        <label for="rua">Rua:</label>
+        <input type="text" id="rua" name="rua" required placeholder="Rua"><br>
+        <label for="numero">Número:</label>
+        <input type="text" id="numero" name="numero" required placeholder="Número"><br>
+        <label for="bairro">Bairro:</label>
+        <input type="text" id="bairro" name="bairro" required placeholder="Bairro"><br>
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade" name="cidade" required placeholder="Cidade"><br>
+        <label for="estado">Estado:</label>
+        <input type="text" id="estado" name="estado" required placeholder="Estado"><br>
+        <label for="cep">CEP:</label>
+        <input type="text" id="cep" name="cep" required placeholder="CEP"><br>
+        <label for="telefone">Telefone fixo:</label>
+        <input type="text" id="telefone" name="telefone" required placeholder="Telefone fixo"><br>
+        <label for="celular">Celular:</label>
+        <input type="text" id="celular" name="celular" required placeholder="Celular"><br>
+      </fieldset>
+    </div>
 
-    <label for="bairro">Bairro:</label>
-    <input type="text" id="bairro" name="bairro" required>
+    <fieldset>
+      <legend>Informações basicas</legend>
+      <div class="metade2">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required placeholder="Digite seu email"><br>
 
-    <label for="cidade">Cidade:</label>
-    <input type="text" id="cidade" name="cidade" required>
+        <label for="confirmarEmail">Confirmar email:</label>
+        <input type="email" id="confirmarEmail" name="confirmarEmail" required placeholder="Confirme seu email"><br>
 
-    <label for="estado">Estado:</label>
-    <input type="text" id="estado" name="estado" required>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required autocomplete="new-password"
+          placeholder="Digite sua senha"><br>
 
-    <label for="cep">CEP:</label>
-    <input type="text" id="cep" name="cep" required>
+        <label for="confirmarSenha">Confirmar senha:</label>
+        <input type="password" id="confirmarSenha" name="confirmarSenha" required autocomplete="new-password"
+          placeholder="Confirme sua senha"><br>
 
-    <label for="telefone">Telefone fixo:</label>
-    <input type="text" id="telefone" name="telefone" required>
+        <label for="fotoPerfil">Foto de Perfil:</label>
+        <input type="file" id="fotoPerfil" name="fotoPerfil" accept="image/*"><br>
 
-    <label for="celular">Celular:</label>
-    <input type="text" id="celular" name="celular" required>
+        <label for="uploadDocumentos">Upload de Documentos:</label>
+        <input type="file" id="uploadDocumentos" name="uploadDocumentos" accept=".pdf,.doc,.docx,image/*" multiple><br>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
+        <label for="escolaridade">Escolaridade:</label>
+        <select name="escolaridade" id="escolaridade">
+          <option value="fundamental">Ensino Fundamental</option>
+          <option value="medio">Ensino Médio</option>
+          <option value="superior">Ensino Superior</option>
+          <option value="posGraduacao">Pós-graduação</option>
+          <option value="mestrado">Mestrado</option>
+          <option value="doutorado">Doutorado</option>
+        </select><br>
 
-    <label for="confirmarEmail">Confirmar email</label>
-    <input type="email" id="confirmarEmail" name="confirmarEmail" required>
+        <label for="cursoInteresse">Curso de interesse:</label>
+        <select name="cursoInteresse" id="cursoInteresse">
+          <option value="analiseDesenvolvimentoSistemas">Análise e Desenvolvimento de Sistemas</option>
+          <option value="cienciaDados">Ciência de Dados</option>
+          <option value="segurancaDaInformacao">Segurança da Informação</option>
+          <option value="redesComputadores">Redes de Computadores</option>
+          <option value="inteligenciaArtificial">Inteligência Artificial</option>
+          <option value="gestaoTI">Gestão de TI</option>
+        </select><br>
 
-    <label for="senha">Senha:</label>
-    <input type="password" id="senha" name="senha" required>
+        <label for="nomeMae">Nome da mãe:</label>
+        <input type="text" id="nomeMae" name="nomeMae" required placeholder="Nome da mãe"><br>
 
-    <label for="confirmarSenha">Confirmar senha:</label>
-    <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+        <label for="nomePai">Nome do pai:</label>
+        <input type="text" id="nomePai" name="nomePai" required placeholder="Nome do pai"><br>
 
-    <label for="fotoPerfil">Foto de Perfil:</label>
-    <input type="file" id="fotoPerfil" name="fotoPerfil" accept="image/*">
+        <label for="contatoEmergencia">Contato de emergência:</label>
+        <input type="tel" id="contatoEmergencia" name="contatoEmergencia" required
+          placeholder="Contato de emergência"><br>
 
-    <label for="uploadDocumentos">Upload de Documentos:</label>
-    <input type="file" id="uploadDocumentos" name="uploadDocumentos" accept=".pdf,.doc,.docx,image/*" multiple>
+        <label>
+          <input type="checkbox" id="necessidades" name="necessidades">
+          Possui necessidades especiais?
+        </label><br>
+        <label for="descricao">Descreva:</label><br>
+        <textarea id="descricao" name="descricao" rows="4" cols="40"
+          placeholder="Descreva suas necessidades especiais"></textarea><br>
 
-    <label for="escolaridade">Escolaridade</label>
-    <select name="escolaridade" id="escolaridade">
-      <option value="fundamental">Ensino Fundamental</option>
-      <option value="medio">Ensino Médio</option>
-      <option value="superior">Ensino Superior</option>
-      <option value="posGraduacao">Pós-graduação</option>
-      <option value="mestrado">Mestrado</option>
-      <option value="doutorado">Doutorado</option>
-    </select>
+        <label for="turno">Turno de preferência:</label><br>
+        <input type="radio" name="turno" id="manha" value="manha">
+        <label for="manha">Manhã</label>
+        <input type="radio" name="turno" id="tarde" value="tarde">
+        <label for="tarde">Tarde</label>
+        <input type="radio" name="turno" id="noite" value="noite">
+        <label for="noite">Noite</label><br>
 
-    <label for="cursoInteresse">Curso de interesse</label>
-    <select name="cursoInteresse" id="cursoInteresse">
-      <option value="analiseDesenvolvimentoSistemas">Análise e Desenvolvimento de Sistemas</option>
-      <option value="cienciaDados">Ciência de Dados</option>
-      <option value="segurancaDaInformacao">Segurança da Informação</option>
-      <option value="redesComputadores">Redes de Computadores</option>
-      <option value="inteligenciaArtificial">Inteligência Artificial</option>
-      <option value="gestaoTI">Gestão de TI</option>
-    </select>
 
-    <label for="nomeMae">Nome da mãe:</label>
-    <input type="text" id="nomeMae" name="nomeMae" required>
-    <label for="nomePai">Nome do pai</label>
-    <input type="text" id="nomePai" name="nomePai" required>
-
-    <label for="contatoEmergencia">Contato de emergência</label>
-    <input type="tel" id="contatoEmergencia" name="contatoEmergencia" required>
-
-    <label>
-      <input type="checkbox" id="necessidades" name="necessidades">
-      Possui necessidades especiais?
-    </label>
-
-    <label for="descricao">Descreva:</label><br>
-    <textarea id="descricao" name="descricao" rows="4" cols="40"></textarea>
-
-    <label for="turno">Turno de preferência:</label>
-    <input type="radio" name="manha" id="manha" value="manha">
-    <label for="manha">Manhã</label>
-    <input type="radio" name="tarde" id="tarde" value="tarde">
-    <label for="tarde">Tarde</label>
-    <input type="radio" name="noite" id="noite" value="noite">
-    <label for="noite">Noite</label>
-
-    <input type="checkbox" name="termos" id="termos" required>
-    <label for="termos">Aceite dos termos e condições</label>
-
-    <br><button type="submit">Cadastrar</button>
+      </div>
+    </fieldset>
+    <div class="termos">
+      <input type="checkbox" name="termos" id="termos" required>
+      <label for="termos">Aceite dos termos e condições</label><br>
+    </div>
+    <div class="botaoSubmit"><button type="submit">Cadastrar</button></div>
   </form>
+
+  
+
+  <script>
+    document.getElementById("cadastroForm").addEventListener("submit", function (e) {
+      e.preventDefault(); // evita recarregar a página
+      alert("Formulário enviado com sucesso!");
+    });
+  </script>
 </body>
 
 </html>
