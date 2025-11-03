@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <section id="contato">
+    <h1>ENTRE EM CONTATO:</h1>
+    <form id="formulario-contato">
+      <input type="text" id="nome" name="nome" autocomplete="name" required placeholder="Seu nome:"> <br>
+
+      <input type="tel" id="numero" name="numero" autocomplete="cc-number" placeholder="Seu número:"><br>
+
+      <input type="email" id="email" name="email" autocomplete="email" required placeholder="Seu e-mail:"><br>
+
+      <textarea id="mensagem" name="mensagem" rows="4" cols="50" required placeholder="Sua mensagem:"></textarea><br>
+
+      <button type="submit">Enviar</button>
+    </form>
+
+    <div id="mensagem-confirmacao"></div>
+  </section>
+  </main>
+
+</body>
+  <script>
+    const formulario = document.getElementById('formulario-contato');
+    const areaFeedback = document.getElementById('mensagem-confirmacao');
+
+    formulario.addEventListener('submit', function (event) {
+
+      event.preventDefault();
+
+
+      const mensagemSucesso = '✅ Inscrição realizada com sucesso! Em breve entraremos em contato.';
+      areaFeedback.innerHTML = mensagemSucesso;
+      areaFeedback.style.display = 'block'; 
+
+      formulario.reset();
+
+      areaFeedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      setTimeout(() => {
+
+        areaFeedback.style.display = 'none';
+      }, 4000);
+    });
+  </script>
+</html>
+
+
+
+
