@@ -14,1398 +14,525 @@ const {
 } = require('./bd');
 
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
-// ===================== CONFIGURAÇÕES =====================
+// ==================== CONFIGURAÇÕES ====================
 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, 'uploads'))
-);
-
-// ===================== UPLOAD DE FOTO =====================
-
+// Upload de foto
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (_, __, cb) => {
     cb(null, path.join(__dirname, 'uploads'));
   },
-
-  filename: function (req, file, cb) {
+  filename: (_, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
 const upload = multer({ storage });
 
+// ==================== USUÁRIOS ====================
 
-// =========================================================
-// ===================== USUÁRIOS ==========================
-// =========================================================
-
-// LOGIN
+// Login
 app.post('/usuarios/login', async (req, res) => {
-  const { email, senha } = req.body;
-
-  if (!email || !senha) {
-    return res.status(400).json({
-      error: 'Email e senha são obrigatórios.'
-    });
-  }
-
   try {
+    const { email, senha } = req.body;
+
     const usuario = await Usuario.findOne({
-      where: { email }
+      where: { email, senha }
     });
 
     if (!usuario) {
-      return res.status(404).json({
-        error: 'Usuário não encontrado.'
-      });
-    }
-
-    if (usuario.senha !== senha) {
       return res.status(401).json({
-        error: 'Senha incorreta.'
-      });
-    }
-
-    let fotoUrl = null;
-
-    if (usuario.foto) {
-      const nomeArquivo = path.basename(usuario.foto);
-
-      fotoUrl = `http://192.168.15.9:${port}/uploads/${nomeArquivo}`;
-    }
-
-    res.json({
-      message: 'Login realizado com sucesso!',
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        tipoUsuario: usuario.tipoUsuario,
-        foto: fotoUrl
-      }
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao realizar login.'
-    });
-  }
-});
-
-
-// LISTAR USUÁRIOS
-app.get('/usuarios', async (req, res) => {
-  try {
-    const usuarios = await Usuario.findAll();
-
-    res.json(usuarios);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar usuários.'
-    });
-  }
-});
-
-
-// BUSCAR USUÁRIO POR ID
-app.get('/usuario/:id', async (req, res) => {
-  try {
-    const usuario = await Usuario.findByPk(req.params.id);
-
-    if (!usuario) {
-      return res.status(404).json({
-        error: 'Usuário não encontrado.'
+        erro: 'Email ou senha inválidos.'
       });
     }
 
     res.json(usuario);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar usuário.'
-    });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
+// Listar usuários
+app.get('/usuarios', async (_, res) => {
+  try {
+    res.json(await Usuario.findAll());
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
+  }
+});
 
-// CADASTRAR USUÁRIO
+// Buscar usuário
+app.get('/usuario/:id', async (req, res) => {
+  try {
+    const usuario = await Usuario.findByPk(req.params.id);
+
+    if (!usuario) {
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
+    }
+
+    res.json(usuario);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
+  }
+});
+
+// Criar usuário
 app.post('/usuario/inserir', upload.single('foto'), async (req, res) => {
   try {
     const { nome, email, senha, tipoUsuario } = req.body;
 
-    if (!nome || !email || !senha || tipoUsuario === undefined) {
+    const existe = await Usuario.findOne({ where: { email } });
+
+    if (existe) {
       return res.status(400).json({
-        error: 'Nome, email, senha e tipo de usuário são obrigatórios.'
+        erro: 'Email já cadastrado.'
       });
     }
 
-    const usuarioExistente = await Usuario.findOne({
-      where: { email }
-    });
-
-    if (usuarioExistente) {
-      return res.status(400).json({
-        error: 'Email já cadastrado.'
-      });
-    }
-
-    const novoUsuario = await Usuario.create({
+    const usuario = await Usuario.create({
       nome,
       email,
       senha,
-      tipoUsuario: parseInt(tipoUsuario, 10),
-      foto: req.file ? req.file.path : null
+      tipoUsuario,
+      foto: req.file ? req.file.filename : null
     });
 
-    res.status(201).json(novoUsuario);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao inserir usuário.'
-    });
+    res.status(201).json(usuario);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// ATUALIZAR USUÁRIO
+// Atualizar usuário
 app.put('/usuarios/atualizar/:id', async (req, res) => {
   try {
-    const { nome, email, senha, tipoUsuario } = req.body;
-
     const usuario = await Usuario.findByPk(req.params.id);
 
     if (!usuario) {
-      return res.status(404).json({
-        error: 'Usuário não encontrado.'
-      });
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
     }
 
-    if (nome !== undefined) usuario.nome = nome;
-    if (email !== undefined) usuario.email = email;
-    if (senha !== undefined) usuario.senha = senha;
+    await usuario.update(req.body);
 
-    if (tipoUsuario !== undefined) {
-      usuario.tipoUsuario = parseInt(tipoUsuario, 10);
-    }
-
-    await usuario.save();
-
-    res.json({
-      message: 'Usuário atualizado com sucesso!',
-      usuario
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao atualizar usuário.'
-    });
+    res.json(usuario);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// ALTERAR SENHA
+// Alterar senha
 app.put('/usuarios/alterar-senha', async (req, res) => {
   try {
-    const { email, senhaAtual, novaSenha } = req.body;
+    const { id, senhaAtual, novaSenha } = req.body;
 
-    if (!email || !senhaAtual || !novaSenha) {
-      return res.status(400).json({
-        error: 'Email, senha atual e nova senha são obrigatórios.'
-      });
-    }
-
-    const usuario = await Usuario.findOne({
-      where: { email }
-    });
+    const usuario = await Usuario.findByPk(id);
 
     if (!usuario) {
-      return res.status(404).json({
-        error: 'Usuário não encontrado.'
-      });
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
     }
 
     if (usuario.senha !== senhaAtual) {
-      return res.status(401).json({
-        error: 'Senha atual incorreta.'
+      return res.status(400).json({
+        erro: 'Senha atual incorreta.'
       });
     }
 
-    usuario.senha = novaSenha;
+    await usuario.update({ senha: novaSenha });
 
-    await usuario.save();
-
-    res.json({
-      message: 'Senha alterada com sucesso!'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao alterar senha.'
-    });
+    res.json({ mensagem: 'Senha alterada com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// REDEFINIR SENHA
+// Redefinir senha
 app.put('/usuarios/redefinir-senha', async (req, res) => {
   try {
-    const {
-      email,
-      novaSenha,
-      confirmarSenha
-    } = req.body;
+    const { email, novaSenha } = req.body;
 
-    if (!email || !novaSenha || !confirmarSenha) {
-      return res.status(400).json({
-        error: 'Email, nova senha e confirmação são obrigatórios.'
-      });
-    }
-
-    if (novaSenha !== confirmarSenha) {
-      return res.status(400).json({
-        error: 'As senhas não coincidem.'
-      });
-    }
-
-    const usuario = await Usuario.findOne({
-      where: { email }
-    });
+    const usuario = await Usuario.findOne({ where: { email } });
 
     if (!usuario) {
-      return res.status(404).json({
-        error: 'Usuário não encontrado.'
-      });
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
     }
 
-    usuario.senha = novaSenha;
+    await usuario.update({ senha: novaSenha });
 
-    await usuario.save();
-
-    res.json({
-      message: 'Senha redefinida com sucesso!'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao redefinir senha.'
-    });
+    res.json({ mensagem: 'Senha redefinida com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// DELETAR USUÁRIO
+// Deletar usuário
 app.delete('/usuario/deletar/:id', async (req, res) => {
   try {
     const usuario = await Usuario.findByPk(req.params.id);
 
     if (!usuario) {
-      return res.status(404).json({
-        error: 'Usuário não encontrado.'
-      });
+      return res.status(404).json({ erro: 'Usuário não encontrado.' });
     }
 
     await usuario.destroy();
 
-    res.json({
-      message: 'Usuário deletado com sucesso.'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao deletar usuário.'
-    });
+    res.json({ mensagem: 'Usuário deletado com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
+// ==================== CATEGORIAS ====================
 
-// =========================================================
-// ===================== CATEGORIAS ========================
-// =========================================================
-
-// LISTAR CATEGORIAS DO USUÁRIO
 app.get('/categorias/:usuarioId', async (req, res) => {
   try {
-    const categorias = await Categoria.findAll({
-      where: {
-        usuarioId: req.params.usuarioId
-      }
-    });
-
-    res.json(categorias);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar categorias.'
-    });
+    res.json(await Categoria.findAll({
+      where: { usuarioId: req.params.usuarioId }
+    }));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// BUSCAR CATEGORIA
 app.get('/categoria/:id', async (req, res) => {
   try {
-    const categoria = await Categoria.findByPk(req.params.id);
+    const item = await Categoria.findByPk(req.params.id);
 
-    if (!categoria) {
-      return res.status(404).json({
-        error: 'Categoria não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Categoria não encontrada.' });
     }
 
-    res.json(categoria);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar categoria.'
-    });
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// CRIAR CATEGORIA
 app.post('/categoria/inserir', async (req, res) => {
   try {
-    const {
-      usuarioId,
-      nome,
-      tipo
-    } = req.body;
-
-    if (!usuarioId || !nome || !tipo) {
-      return res.status(400).json({
-        error: 'Usuário, nome e tipo são obrigatórios.'
-      });
-    }
-
-    const categoria = await Categoria.create({
-      usuarioId,
-      nome,
-      tipo
-    });
-
-    res.status(201).json(categoria);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao inserir categoria.'
-    });
+    res.status(201).json(await Categoria.create(req.body));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// ATUALIZAR CATEGORIA
 app.put('/categoria/atualizar/:id', async (req, res) => {
   try {
-    const categoria = await Categoria.findByPk(req.params.id);
+    const item = await Categoria.findByPk(req.params.id);
 
-    if (!categoria) {
-      return res.status(404).json({
-        error: 'Categoria não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Categoria não encontrada.' });
     }
 
-    const { nome, tipo } = req.body;
-
-    if (nome !== undefined) categoria.nome = nome;
-    if (tipo !== undefined) categoria.tipo = tipo;
-
-    await categoria.save();
-
-    res.json({
-      message: 'Categoria atualizada com sucesso!',
-      categoria
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao atualizar categoria.'
-    });
+    await item.update(req.body);
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// DELETAR CATEGORIA
 app.delete('/categoria/deletar/:id', async (req, res) => {
   try {
-    const categoria = await Categoria.findByPk(req.params.id);
+    const item = await Categoria.findByPk(req.params.id);
 
-    if (!categoria) {
-      return res.status(404).json({
-        error: 'Categoria não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Categoria não encontrada.' });
     }
 
-    await categoria.destroy();
-
-    res.json({
-      message: 'Categoria deletada com sucesso.'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao deletar categoria.'
-    });
+    await item.destroy();
+    res.json({ mensagem: 'Categoria deletada com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
+// ==================== CARTÕES ====================
 
-// =========================================================
-// ===================== CARTÕES ===========================
-// =========================================================
-
-// LISTAR CARTÕES DO USUÁRIO
 app.get('/cartoes/:usuarioId', async (req, res) => {
   try {
-    const cartoes = await Cartao.findAll({
-      where: {
-        usuarioId: req.params.usuarioId
-      }
-    });
-
-    res.json(cartoes);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar cartões.'
-    });
+    res.json(await Cartao.findAll({
+      where: { usuarioId: req.params.usuarioId }
+    }));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// BUSCAR CARTÃO
 app.get('/cartao/:id', async (req, res) => {
   try {
-    const cartao = await Cartao.findByPk(req.params.id);
+    const item = await Cartao.findByPk(req.params.id);
 
-    if (!cartao) {
-      return res.status(404).json({
-        error: 'Cartão não encontrado.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Cartão não encontrado.' });
     }
 
-    res.json(cartao);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar cartão.'
-    });
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// CRIAR CARTÃO
 app.post('/cartao/inserir', async (req, res) => {
   try {
-    const {
-      usuarioId,
-      nome,
-      limite,
-      diaFechamento,
-      diaVencimento
-    } = req.body;
-
-    if (!usuarioId || !nome) {
-      return res.status(400).json({
-        error: 'Usuário e nome do cartão são obrigatórios.'
-      });
-    }
-
-    const cartao = await Cartao.create({
-      usuarioId,
-      nome,
-      limite: limite || 0,
-      diaFechamento,
-      diaVencimento
-    });
-
-    res.status(201).json(cartao);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao inserir cartão.'
-    });
+    res.status(201).json(await Cartao.create(req.body));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// ATUALIZAR CARTÃO
 app.put('/cartao/atualizar/:id', async (req, res) => {
   try {
-    const cartao = await Cartao.findByPk(req.params.id);
+    const item = await Cartao.findByPk(req.params.id);
 
-    if (!cartao) {
-      return res.status(404).json({
-        error: 'Cartão não encontrado.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Cartão não encontrado.' });
     }
 
-    const {
-      nome,
-      limite,
-      diaFechamento,
-      diaVencimento
-    } = req.body;
-
-    if (nome !== undefined) cartao.nome = nome;
-    if (limite !== undefined) cartao.limite = limite;
-    if (diaFechamento !== undefined) {
-      cartao.diaFechamento = diaFechamento;
-    }
-
-    if (diaVencimento !== undefined) {
-      cartao.diaVencimento = diaVencimento;
-    }
-
-    await cartao.save();
-
-    res.json({
-      message: 'Cartão atualizado com sucesso!',
-      cartao
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao atualizar cartão.'
-    });
+    await item.update(req.body);
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// DELETAR CARTÃO
 app.delete('/cartao/deletar/:id', async (req, res) => {
   try {
-    const cartao = await Cartao.findByPk(req.params.id);
+    const item = await Cartao.findByPk(req.params.id);
 
-    if (!cartao) {
-      return res.status(404).json({
-        error: 'Cartão não encontrado.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Cartão não encontrado.' });
     }
 
-    await cartao.destroy();
-
-    res.json({
-      message: 'Cartão deletado com sucesso.'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao deletar cartão.'
-    });
+    await item.destroy();
+    res.json({ mensagem: 'Cartão deletado com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
+// ==================== TRANSAÇÕES ====================
 
-// =========================================================
-// ===================== TRANSAÇÕES ========================
-// =========================================================
-
-// LISTAR TRANSAÇÕES DO USUÁRIO
 app.get('/transacoes/:usuarioId', async (req, res) => {
   try {
-    const transacoes = await Transacao.findAll({
-      where: {
-        usuarioId: req.params.usuarioId
-      },
+    res.json(await Transacao.findAll({
+      where: { usuarioId: req.params.usuarioId },
       order: [['data', 'DESC']]
-    });
-
-    res.json(transacoes);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar transações.'
-    });
+    }));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// BUSCAR TRANSAÇÃO
 app.get('/transacao/:id', async (req, res) => {
   try {
-    const transacao = await Transacao.findByPk(req.params.id);
+    const item = await Transacao.findByPk(req.params.id);
 
-    if (!transacao) {
-      return res.status(404).json({
-        error: 'Transação não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Transação não encontrada.' });
     }
 
-    res.json(transacao);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar transação.'
-    });
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// CRIAR TRANSAÇÃO
 app.post('/transacao/inserir', async (req, res) => {
   try {
-    const {
-      usuarioId,
-      categoriaId,
-      cartaoId,
-      descricao,
-      valor,
-      tipo,
-      data,
-      formaPagamento
-    } = req.body;
-
-    if (
-      !usuarioId ||
-      !descricao ||
-      valor === undefined ||
-      !tipo ||
-      !data ||
-      !formaPagamento
-    ) {
-      return res.status(400).json({
-        error: 'Preencha todos os campos obrigatórios.'
-      });
-    }
-
-    const transacao = await Transacao.create({
-      usuarioId,
-      categoriaId: categoriaId || null,
-      cartaoId: cartaoId || null,
-      descricao,
-      valor,
-      tipo,
-      data,
-      formaPagamento
-    });
-
-    res.status(201).json(transacao);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao inserir transação.'
-    });
+    res.status(201).json(await Transacao.create(req.body));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// ATUALIZAR TRANSAÇÃO
 app.put('/transacao/atualizar/:id', async (req, res) => {
   try {
-    const transacao = await Transacao.findByPk(req.params.id);
+    const item = await Transacao.findByPk(req.params.id);
 
-    if (!transacao) {
-      return res.status(404).json({
-        error: 'Transação não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Transação não encontrada.' });
     }
 
-    const {
-      categoriaId,
-      cartaoId,
-      descricao,
-      valor,
-      tipo,
-      data,
-      formaPagamento
-    } = req.body;
-
-    if (categoriaId !== undefined) {
-      transacao.categoriaId = categoriaId;
-    }
-
-    if (cartaoId !== undefined) {
-      transacao.cartaoId = cartaoId;
-    }
-
-    if (descricao !== undefined) transacao.descricao = descricao;
-    if (valor !== undefined) transacao.valor = valor;
-    if (tipo !== undefined) transacao.tipo = tipo;
-    if (data !== undefined) transacao.data = data;
-
-    if (formaPagamento !== undefined) {
-      transacao.formaPagamento = formaPagamento;
-    }
-
-    await transacao.save();
-
-    res.json({
-      message: 'Transação atualizada com sucesso!',
-      transacao
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao atualizar transação.'
-    });
+    await item.update(req.body);
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// DELETAR TRANSAÇÃO
 app.delete('/transacao/deletar/:id', async (req, res) => {
   try {
-    const transacao = await Transacao.findByPk(req.params.id);
+    const item = await Transacao.findByPk(req.params.id);
 
-    if (!transacao) {
-      return res.status(404).json({
-        error: 'Transação não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Transação não encontrada.' });
     }
 
-    await transacao.destroy();
-
-    res.json({
-      message: 'Transação deletada com sucesso.'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao deletar transação.'
-    });
+    await item.destroy();
+    res.json({ mensagem: 'Transação deletada com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
+// ==================== ORÇAMENTOS ====================
 
-// =========================================================
-// ===================== ORÇAMENTOS ========================
-// =========================================================
-
-// LISTAR ORÇAMENTOS
 app.get('/orcamentos/:usuarioId', async (req, res) => {
   try {
-    const orcamentos = await Orcamento.findAll({
-      where: {
-        usuarioId: req.params.usuarioId
-      }
-    });
-
-    res.json(orcamentos);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar orçamentos.'
-    });
+    res.json(await Orcamento.findAll({
+      where: { usuarioId: req.params.usuarioId }
+    }));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// BUSCAR ORÇAMENTO
 app.get('/orcamento/:id', async (req, res) => {
   try {
-    const orcamento = await Orcamento.findByPk(req.params.id);
+    const item = await Orcamento.findByPk(req.params.id);
 
-    if (!orcamento) {
-      return res.status(404).json({
-        error: 'Orçamento não encontrado.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Orçamento não encontrado.' });
     }
 
-    res.json(orcamento);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar orçamento.'
-    });
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// CRIAR ORÇAMENTO
 app.post('/orcamento/inserir', async (req, res) => {
   try {
-    const {
-      usuarioId,
-      categoriaId,
-      valor,
-      periodo
-    } = req.body;
-
-    if (!usuarioId || valor === undefined || !periodo) {
-      return res.status(400).json({
-        error: 'Usuário, valor e período são obrigatórios.'
-      });
-    }
-
-    const orcamento = await Orcamento.create({
-      usuarioId,
-      categoriaId: categoriaId || null,
-      valor,
-      periodo
-    });
-
-    res.status(201).json(orcamento);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao inserir orçamento.'
-    });
+    res.status(201).json(await Orcamento.create(req.body));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// ATUALIZAR ORÇAMENTO
 app.put('/orcamento/atualizar/:id', async (req, res) => {
   try {
-    const orcamento = await Orcamento.findByPk(req.params.id);
+    const item = await Orcamento.findByPk(req.params.id);
 
-    if (!orcamento) {
-      return res.status(404).json({
-        error: 'Orçamento não encontrado.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Orçamento não encontrado.' });
     }
 
-    const {
-      categoriaId,
-      valor,
-      periodo
-    } = req.body;
-
-    if (categoriaId !== undefined) {
-      orcamento.categoriaId = categoriaId;
-    }
-
-    if (valor !== undefined) orcamento.valor = valor;
-    if (periodo !== undefined) orcamento.periodo = periodo;
-
-    await orcamento.save();
-
-    res.json({
-      message: 'Orçamento atualizado com sucesso!',
-      orcamento
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao atualizar orçamento.'
-    });
+    await item.update(req.body);
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// DELETAR ORÇAMENTO
 app.delete('/orcamento/deletar/:id', async (req, res) => {
   try {
-    const orcamento = await Orcamento.findByPk(req.params.id);
+    const item = await Orcamento.findByPk(req.params.id);
 
-    if (!orcamento) {
-      return res.status(404).json({
-        error: 'Orçamento não encontrado.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Orçamento não encontrado.' });
     }
 
-    await orcamento.destroy();
-
-    res.json({
-      message: 'Orçamento deletado com sucesso.'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao deletar orçamento.'
-    });
+    await item.destroy();
+    res.json({ mensagem: 'Orçamento deletado com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
+// ==================== FATURAS ====================
 
-// =========================================================
-// ======================= FATURAS =========================
-// =========================================================
-
-// LISTAR FATURAS DO USUÁRIO
 app.get('/faturas/:usuarioId', async (req, res) => {
   try {
-    const faturas = await Fatura.findAll({
-      where: {
-        usuarioId: req.params.usuarioId
-      },
-      order: [
-        ['ano', 'DESC'],
-        ['mes', 'DESC']
-      ]
-    });
-
-    res.json(faturas);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar faturas.'
-    });
+    res.json(await Fatura.findAll({
+      where: { usuarioId: req.params.usuarioId }
+    }));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// BUSCAR FATURA
 app.get('/fatura/:id', async (req, res) => {
   try {
-    const fatura = await Fatura.findByPk(req.params.id);
+    const item = await Fatura.findByPk(req.params.id);
 
-    if (!fatura) {
-      return res.status(404).json({
-        error: 'Fatura não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Fatura não encontrada.' });
     }
 
-    res.json(fatura);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao buscar fatura.'
-    });
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// CRIAR FATURA
 app.post('/fatura/inserir', async (req, res) => {
   try {
-    const {
-      usuarioId,
-      cartaoId,
-      mes,
-      ano,
-      paga
-    } = req.body;
-
-    if (!usuarioId || !cartaoId || !mes || !ano) {
-      return res.status(400).json({
-        error: 'Usuário, cartão, mês e ano são obrigatórios.'
-      });
-    }
-
-    const fatura = await Fatura.create({
-      usuarioId,
-      cartaoId,
-      mes,
-      ano,
-      paga: paga || false
-    });
-
-    res.status(201).json(fatura);
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao inserir fatura.'
-    });
+    res.status(201).json(await Fatura.create(req.body));
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// ATUALIZAR FATURA
 app.put('/fatura/atualizar/:id', async (req, res) => {
   try {
-    const fatura = await Fatura.findByPk(req.params.id);
+    const item = await Fatura.findByPk(req.params.id);
 
-    if (!fatura) {
-      return res.status(404).json({
-        error: 'Fatura não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Fatura não encontrada.' });
     }
 
-    const {
-      mes,
-      ano,
-      paga
-    } = req.body;
-
-    if (mes !== undefined) fatura.mes = mes;
-    if (ano !== undefined) fatura.ano = ano;
-    if (paga !== undefined) fatura.paga = paga;
-
-    await fatura.save();
-
-    res.json({
-      message: 'Fatura atualizada com sucesso!',
-      fatura
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao atualizar fatura.'
-    });
+    await item.update(req.body);
+    res.json(item);
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// MARCAR FATURA COMO PAGA
+// Pagar fatura
 app.put('/fatura/pagar/:id', async (req, res) => {
   try {
-    const fatura = await Fatura.findByPk(req.params.id);
+    const item = await Fatura.findByPk(req.params.id);
 
-    if (!fatura) {
-      return res.status(404).json({
-        error: 'Fatura não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Fatura não encontrada.' });
     }
 
-    fatura.paga = true;
-
-    await fatura.save();
+    await item.update({ paga: true });
 
     res.json({
-      message: 'Fatura marcada como paga!',
-      fatura
+      mensagem: 'Fatura paga com sucesso.',
+      fatura: item
     });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao pagar fatura.'
-    });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// DELETAR FATURA
 app.delete('/fatura/deletar/:id', async (req, res) => {
   try {
-    const fatura = await Fatura.findByPk(req.params.id);
+    const item = await Fatura.findByPk(req.params.id);
 
-    if (!fatura) {
-      return res.status(404).json({
-        error: 'Fatura não encontrada.'
-      });
+    if (!item) {
+      return res.status(404).json({ erro: 'Fatura não encontrada.' });
     }
 
-    await fatura.destroy();
-
-    res.json({
-      message: 'Fatura deletada com sucesso.'
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: 'Erro ao deletar fatura.'
-    });
+    await item.destroy();
+    res.json({ mensagem: 'Fatura deletada com sucesso.' });
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message });
   }
 });
 
-
-// =========================================================
-// ===================== CONEXÃO ============================
-// =========================================================
+// ==================== SERVIDOR ====================
 
 sequelize.authenticate()
-  .then(() => {
-    console.log('Conexão com o banco de dados estabelecida.');
-  })
-  .catch(error => {
-    console.error(
-      'Erro ao conectar ao banco de dados:',
-      error
-    );
-  });
+  .then(() => console.log('Banco de dados conectado.'))
+  .catch(erro => console.error('Erro no banco:', erro));
 
-
-// =========================================================
-// ===================== SERVIDOR ===========================
-// =========================================================
-
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
-});
-
-[/code]
-
-
-Esse arquivo já contempla as rotas para as **6 tabelas** e mantém a sua estrutura de login/cadastro.
-
-**Importante:** no seu `bd.js`, os nomes dos campos precisam ser exatamente `usuarioId`, `categoriaId`, `cartaoId`, `formaPagamento`, etc., como no código acima. Se você usar o `bd.js` que montamos anteriormente, está compatível.
-
-Se você for colocar isso no GitHub pelo celular, basta abrir o arquivo atual, selecionar tudo, apagar e **colar esse código inteiro**, depois fazer o commit.
-  try {
-    const usuario = await Usuario.findOne({ where: { email } });
-
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado.' });
-    }
-
-    if (usuario.senha !== senha) {
-      return res.status(401).json({ error: 'Senha incorreta.' });
-    }
-
-    // Adaptar o caminho da foto para URL pública
-    let fotoUrl = null;
-    if (usuario.foto) {
-      const nomeArquivo = path.basename(usuario.foto);
-      fotoUrl = `http://192.168.15.9:3000/uploads/${nomeArquivo}`;
-    }
-
-    res.json({
-      message: 'Login realizado com sucesso!',
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        tipoUsuario: usuario.tipoUsuario,
-        foto: fotoUrl
-      },
-    });
-
-  } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    res.status(500).json({ error: 'Erro ao tentar realizar o login.' });
-  }
-});
-
-// Rota para obter todos os usuários
-app.get('/usuarios', async (req, res) => {
-  try {
-    const usuarios = await Usuario.findAll();
-    res.json(usuarios);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar usuários.' });
-  }
-});
-
-// Rota para obter um usuário por ID
-app.get('/usuario/:id', async (req, res) => {
-  try {
-    const usuario = await Usuario.findByPk(req.params.id);
-    if (usuario) {
-      res.json(usuario);
-    } else {
-      res.status(404).send('Usuário não encontrado');
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar usuário.' });
-  }
-});
-
-// Rota para criar um novo usuário
-app.post('/usuario/inserir', upload.single('foto'), async (req, res) => {
-  try {
-    // Verifica se o arquivo foi enviado
-    if (!req.file) {
-      return res.status(400).json({ error: 'Nenhuma imagem foi enviada.' });
-    }
-
-    // Cria o novo usuário com os dados recebidos e o caminho da imagem
-    const novoUsuario = await Usuario.create({
-      nome: req.body.nome,
-      senha: req.body.senha,
-      email: req.body.email,
-      tipoUsuario: parseInt(req.body.tipoUsuario, 10), // Converte para inteiro
-      foto: req.file.path
-    });
-
-    res.status(201).json(novoUsuario);
-  } catch (error) {
-    console.error('Erro ao inserir usuário:', error);
-    res.status(500).json({ error: 'Erro ao inserir usuário.' });
-  }
-});
-
-// Rota para atualizar usuário
-app.put('/usuarios/atualizar/:id', async (req, res) => {
-  console.log('Requisição recebida para atualizar dados do usuário:', req.body);
-
-  const { nome, email, senha, tipoUsuario } = req.body;
-  const { id } = req.params;
-
-  if (!nome || !email || !senha || typeof tipoUsuario === 'undefined') {
-    return res.status(400).json({ error: 'Nome, email, senha e tipo de usuário são obrigatórios.' });
-  }
-
-  try {
-    const usuario = await Usuario.findOne({ where: { id } });
-
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado.' });
-    }
-
-    usuario.nome = nome.trim();
-    usuario.email = email.trim();
-    usuario.senha = senha.trim();
-    usuario.tipoUsuario = parseInt(tipoUsuario, 10);
-
-    await usuario.save();
-
-    res.json({
-      message: 'Dados do usuário atualizados com sucesso!',
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        tipoUsuario: usuario.tipoUsuario,
-      },
-    });
-
-  } catch (error) {
-    console.error('Erro ao atualizar os dados do usuário:', error);
-    res.status(500).json({ error: 'Erro ao tentar atualizar os dados do usuário.' });
-  }
-});
-
-// Rota para alterar senha do usuário
-app.put('/usuarios/alterar-senha', async (req, res) => {
-  console.log('Requisição recebida para alterar senha:', req.body);
-
-  const { email, senhaAtual, novaSenha } = req.body;
-
-  if (!email || !senhaAtual || !novaSenha) {
-    return res.status(400).json({ error: 'Email, senha atual e nova senha são obrigatórios.' });
-  }
-
-  try {
-    const usuario = await Usuario.findOne({ where: { email } });
-
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado.' });
-    }
-
-    console.log("usuario.senha (armazenada):", usuario.senha, "| Tipo:", typeof usuario.senha);
-    console.log("senhaAtual (informada):", senhaAtual, "| Tipo:", typeof senhaAtual);
-
-    if (usuario.senha.trim() !== senhaAtual.trim()) {
-      return res.status(401).json({ error: 'Senha atual incorreta.' });
-    }
-
-    usuario.senha = novaSenha.trim();
-    await usuario.save();
-
-    res.json({
-      message: 'Senha alterada com sucesso!',
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-      },
-    });
-
-  } catch (error) {
-    console.error('Erro ao alterar a senha:', error);
-    res.status(500).json({ error: 'Erro ao tentar alterar a senha.' });
-  }
-});
-
-// Rota para redefinir senha do usuário
-app.put('/usuarios/redefinir-senha', async (req, res) => {
-  console.log('Requisição recebida para redefinir senha:', req.body);
-  const { email, novaSenha, confirmarSenha } = req.body;
-
-  if (!email || !novaSenha || !confirmarSenha) {
-    return res.status(400).json({ error: 'Email, nova senha e confirmação são obrigatórios.' });
-  }
-
-  if (novaSenha.trim() !== confirmarSenha.trim()) {
-    return res.status(400).json({ error: 'As senhas não coincidem.' });
-  }
-
-  try {
-    const usuario = await Usuario.findOne({ where: { email } });
-
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuário não encontrado.' });
-    }
-
-    usuario.senha = novaSenha.trim();
-    await usuario.save();
-
-    res.json({
-      message: 'Senha redefinida com sucesso!',
-      usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-      },
-    });
-  } catch (error) {
-    console.error('Erro ao redefinir a senha:', error);
-    res.status(500).json({ error: 'Erro ao tentar redefinir a senha.' });
-  }
-});
-
-// Rota para deletar um usuário
-app.delete('/usuario/deletar/:id', async (req, res) => {
-  try {
-    const usuario = await Usuario.findByPk(req.params.id);
-    if (usuario) {
-      await usuario.destroy();
-      res.json({ message: 'Usuário deletado com sucesso.' });
-    } else {
-      res.status(404).send('Usuário não encontrado');
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao deletar usuário.' });
-  }
-});
-
-// Inicia o servidor
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
