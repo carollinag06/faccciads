@@ -1,5 +1,10 @@
 const Usuario = require('../models/Usuario');
-const { gerarHash } = require('../hash');
+const { gerarHash, compararSenha } = require('../hash');
+
+const dadosPublicos = (usuario) => {
+  const { senha, ...dados } = usuario.toJSON();
+  return dados;
+};
 
 const criarUsuario = async (req, res) => {
   try {
@@ -54,7 +59,7 @@ const buscarUsuarioPorId = async (req, res) => {
 const atualizarUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nome, email, tipoUsuario } = req.body;
+    const { nome, email, senha, tipoUsuario } = req.body;
     const usuario = await Usuario.findByPk(id);
 
     if (!usuario) {
@@ -62,8 +67,13 @@ const atualizarUsuario = async (req, res) => {
     }
 
     const foto = req.file ? req.file.filename : usuario.foto;
+    const dadosAtualizacao = { nome, email, tipoUsuario, foto };
 
-    await usuario.update({ nome, email, tipoUsuario, foto });
+    if (senha) {
+      dadosAtualizacao.senha = await gerarHash(senha);
+    }
+
+    await usuario.update(dadosAtualizacao);
 
     return res.status(200).json({ mensagem: 'Usuário atualizado com sucesso' });
   } catch (error) {
@@ -87,10 +97,29 @@ const deletarUsuario = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+    if (!email || !senha) {
+      return res.status(400).json({ error: 'Email e senha sao obrigatorios' });
+    }
+
+    const usuario = await Usuario.findOne({ where: { email } });
+    if (!usuario || !(await compararSenha(senha, usuario.senha))) {
+      return res.status(401).json({ error: 'Email ou senha invalidos' });
+    }
+
+    return res.status(200).json({ usuario: dadosPublicos(usuario) });
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao realizar login', detalhes: error.message });
+  }
+};
+
 module.exports = {
   criarUsuario,
   listarUsuarios,
   buscarUsuarioPorId,
   atualizarUsuario,
-  deletarUsuario
+  deletarUsuario,
+  login
 };
