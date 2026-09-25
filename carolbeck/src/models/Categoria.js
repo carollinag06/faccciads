@@ -18,7 +18,8 @@ const Categoria = sequelize.define('Categoria', {
 }, {
   tableName: 'categorias',
   freezeTableName: true,
-  timestamps: true
+  timestamps: true,
+  underscored: true
 });
 
 module.exports = Categoria;

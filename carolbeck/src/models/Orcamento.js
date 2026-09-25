@@ -22,7 +22,8 @@ const Orcamento = sequelize.define('Orcamento', {
 }, {
   tableName: 'orcamentos',
   freezeTableName: true,
-  timestamps: true
+  timestamps: true,
+  underscored: true
 });
 
 module.exports = Orcamento;

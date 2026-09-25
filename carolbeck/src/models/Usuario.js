@@ -22,16 +22,18 @@ const Usuario = sequelize.define('Usuario', {
   },
   tipoUsuario: {
     type: DataTypes.STRING(50),
-    allowNull: false
+    allowNull: false,
+    field: 'tipo_usuario'
   },
   foto: {
     type: DataTypes.STRING(255),
     allowNull: true
   }
 }, {
-  tableName: 'usuarios',    // Força o Sequelize a usar a tabela 'usuarios' do seu SQL
-  freezeTableName: true,     // Impede que o Sequelize altere ou pluralize o nome
-  timestamps: true
+  tableName: 'usuarios',
+  freezeTableName: true,
+  timestamps: true,
+  underscored: true
 });
 
 module.exports = Usuario;

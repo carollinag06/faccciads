@@ -1,7 +1,11 @@
 const { Router } = require('express');
+const { autenticar } = require('../middleware/auth');
 const controller = require('../controllers/faturaController');
 
 const router = Router();
+
+router.use(autenticar);
+
 router.get('/', controller.listar);
 router.get('/:id', controller.buscar);
 router.post('/', controller.criar);

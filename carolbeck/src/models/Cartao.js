@@ -27,7 +27,8 @@ const Cartao = sequelize.define('Cartao', {
 }, {
   tableName: 'cartoes',
   freezeTableName: true,
-  timestamps: true
+  timestamps: true,
+  underscored: true
 });
 
 module.exports = Cartao;

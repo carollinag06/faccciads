@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const Usuario = require('../models/Usuario');
 const { gerarHash, compararSenha } = require('../hash');
 
@@ -109,7 +111,18 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Email ou senha invalidos' });
     }
 
-    return res.status(200).json({ usuario: dadosPublicos(usuario) });
+    const payload = {
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      tipoUsuario: usuario.tipoUsuario
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    });
+
+    return res.status(200).json({ usuario: dadosPublicos(usuario), token });
   } catch (error) {
     return res.status(500).json({ error: 'Erro ao realizar login', detalhes: error.message });
   }

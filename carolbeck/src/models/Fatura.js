@@ -23,7 +23,8 @@ const Fatura = sequelize.define('Fatura', {
 }, {
   tableName: 'faturas',
   freezeTableName: true,
-  timestamps: true
+  timestamps: true,
+  underscored: true
 });
 
 module.exports = Fatura;
